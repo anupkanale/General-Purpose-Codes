@@ -1,0 +1,64 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[margin=1in]{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or epsÂ§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{undertilde}
+
+\usepackage[T1]{fontenc}
+\usepackage{mathtools}  % loads »amsmath«
+\usepackage{physics}
+
+\setlength{\parskip}{0.5em}
+%SetFonts
+
+%SetFonts
+\newcommand\Rey{\mbox{\textit{Re}}}
+
+\title{\vspace{-6ex}\Large METHOD OF LEAST SQUARES FOR A LINE}
+\author{\vspace{-6ex}Anup V Kanale}
+\date{\vspace{-3ex}\today}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+\section*{Problem Statement}
+Given a set of $N$ ordered pairs $(x_i, y_i)$, find a line through these points such that the square of the error is minimized.
+\section*{Derivation}
+For every given $x_i$, let the fitted $y_i$ be obtained from the general equation of the line
+	\begin{equation}
+	y_{fit} = a x_i + b
+	\end{equation}
+where $a$ is the slope of the line and $b$ is the y-intercept.
+
+Now, the error is given by,
+	\begin{align}
+	E &= \sum\limits_{i=1}^N (y_{fit} - y_i)^2 \\
+	  &= \sum\limits_{i=1}^N (a x_i + b - y_i)^2
+	\end{align}
+For a given set of $x_i$ and $y_i$, we see that the error is a function of $a$ and $b$, i.e., $E \equiv E(a,b)$.
+
+The extremum (maximum or minimum) of a function occurs when it's slope is zero, or mathematically put, when the first derivative of the function if zero. Therefore,
+	\begin{align}
+	dE = \pdv{E}{a} da &+ \pdv{E}{b} db = 0 \\
+	\therefore \pdv{E}{a} = 0, \quad &and \quad \pdv{E}{b} = 0
+	\end{align}
+Now,
+	\begin{align}
+	\pdv{E}{a} = \sum\limits_{i=1}^N 2 & (a x_i + b - y_i) \cdot x_i = 0\\
+	\implies \left( \sum\limits_{i=1}^N x_i^2 \right) a &+ \left( \sum\limits_{i=1}^N x_i \right) b = \sum\limits_{i=1}^N x_i y_i
+	\end{align}
+Similarly,
+	\begin{align}
+	\pdv{E}{b} = \sum\limits_{i=1}^N & 2(a x_i + b - y_i) \\
+	 \implies \left( \sum\limits_{i=1}^N x_i \right) & a + \left( N \right) b = \sum\limits_{i=1}^N y_i
+	\end{align}
+This is a system of linear equations which can be solved for $a$ and $b$
+	\begin{align}
+	a &= \frac{N \sum\limits_{i=1}^N x_i y_i - \sum\limits_{i=1}^Nx_i \sum\limits_{i=1}^N y_i}{N \sum\limits_{i=1}^N x_i^2 - \left( \sum\limits_{i=1}^Nx_i \right)^2} \\
+	b &= \frac{\sum\limits_{i=1}^N y_i - \left( \sum\limits_{i=1}^N x_i \right) a}{N}
+	\end{align}
+There is an accompanying piece of code written in matlab which calculates and plots the fitted line and the given $N$ ordered pairs.
+\end{document}
