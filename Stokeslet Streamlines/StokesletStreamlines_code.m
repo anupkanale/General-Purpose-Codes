@@ -15,7 +15,7 @@ for ii=1:length(rx)
     for jj=1:length(ry)
         r = [rx(ii); ry(jj)];
         if norm(r)==0
-            r=[eps; eps];
+            r=[eps; eps]; % this is done to avoid the singularity at (0,0)
             continue;
         end;
         rDotF = r(1)*F(1) + r(2)*F(2);
