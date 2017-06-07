@@ -1,6 +1,6 @@
 % Short-range/Real-space sum contribution
 
-function URealSum = realSum(a1,a2,a3,r,q,N,nBoxes,L,eps0,sigma)
+function URealSum = realSum(a1,a2,a3,r,q,N,nBoxes,L,alpha)
 
     nL = makePeriodicBox(a1, a2, a3, L, nBoxes);
 
@@ -10,10 +10,12 @@ function URealSum = realSum(a1,a2,a3,r,q,N,nBoxes,L,eps0,sigma)
         for jj=1:N
             dist = norm( r(:,ii) - r(:,jj) + nL(:,kk) );
             if (dist~=0)
-                URealSum = URealSum + q(ii)*q(jj)/dist * erfc(dist/(sqrt(2)*sigma));
+                URealSum = URealSum + q(ii)*q(jj)/dist * erfc(dist*sqrt(alpha));
             end
         end
         end
     end
-    URealSum= URealSum/(4*pi*eps0*2);
+    % halve to account for double counting, i.e., ii-jj and jj-ii pair
+    % interaction is the same but has been counted twice
+    URealSum= URealSum/2;
 end

@@ -1,6 +1,6 @@
 % Direct Summation
 
-function UDirect = directSum(a1,a2,a3,r,q,N,nBoxes,L,eps0)
+function UDirect = directSum(a1,a2,a3,r,q,N,nBoxes,L)
 
     nL = makePeriodicBox(a1,a2,a3,L,nBoxes);
     UDirect = 0;
@@ -14,5 +14,7 @@ function UDirect = directSum(a1,a2,a3,r,q,N,nBoxes,L,eps0)
         end
         end
     end
-    UDirect = UDirect/(4*pi*eps0*2);
+    % halve to account for double counting, i.e., ii-jj and jj-ii pair
+    % interaction is the same but has been counted twice
+    UDirect = UDirect/2;
 end

@@ -1,13 +1,13 @@
 % Long-range/Fourier-space sum contribution
 
-function UFourierSum = waveSum(a1,a2,a3,r,q,N,nBoxes,L,eps0,sigma)
+function UFourierSum = waveSum(a1,a2,a3,r,q,N,nBoxes,L,alpha)
     %Reciprocal Lattice vectors
     Vol = dot(a1,cross(a2,a3));
     b1 = 2*pi*cross(a2,a3)/Vol;
     b2 = 2*pi*cross(a3,a1)/Vol;
     b3 = 2*pi*cross(a1,a2)/Vol;
     pKVec = makePeriodicBox(b1, b2, b3, L, nBoxes);
-
+    
     UFourierSum = 0;
     for kk=1:nBoxes
         strucFac = 0;
@@ -17,8 +17,8 @@ function UFourierSum = waveSum(a1,a2,a3,r,q,N,nBoxes,L,eps0,sigma)
             for ii=1:N
                 strucFac = strucFac + q(ii) * exp(1j*dot(kVec,r(:,ii)) );
             end
-            UFourierSum = UFourierSum + exp(-sigma^2*kMag^2*0.5)*(abs(strucFac)/kMag)^2;
+            UFourierSum = UFourierSum + 4*pi*exp(-kMag^2/(4*alpha))* (abs(strucFac)/kMag)^2;
         end
     end
-    UFourierSum = UFourierSum/(2*Vol*eps0);
+    UFourierSum = UFourierSum/(2*Vol);
 end
