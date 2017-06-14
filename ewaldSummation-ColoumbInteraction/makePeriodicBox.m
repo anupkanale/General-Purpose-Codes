@@ -1,8 +1,8 @@
-function nL = makePeriodicBox(iVec, jVec, kVec, L, nBoxes)
+function nL = makePeriodicBox(iVec, jVec, kVec, L, nTerms)
     
-    nx = floor(nBoxes^(1/3)/2);
+    nx = floor(nTerms^(1/3)/2);
     ny = nx; nz = nx;
-    nL = zeros(3,nBoxes);
+    nL = zeros(3,nTerms);
     index=0;
     for n1=-nx:nx
         for n2=-ny:ny
@@ -13,3 +13,7 @@ function nL = makePeriodicBox(iVec, jVec, kVec, L, nBoxes)
         end
     end
 end
+
+% Questions
+% 1. nReal and nImag have to be certain specific valuess right? because
+% can't take individual vectors, have to take vectors

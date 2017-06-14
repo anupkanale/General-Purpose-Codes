@@ -1,11 +1,11 @@
 % Short-range/Real-space sum contribution
 
-function URealSum = realSum(a1,a2,a3,r,q,N,nBoxes,L,alpha)
+function URealSum = realSum(a1,a2,a3,r,q,N,nReal,L,alpha)
 
-    nL = makePeriodicBox(a1, a2, a3, L, nBoxes);
+    nL = makePeriodicBox(a1, a2, a3, L, nReal);
 
     URealSum = 0;
-    for kk=1:nBoxes % periodic box #
+    for kk=1:nReal % periodic box #
         for ii=1:N
         for jj=1:N
             dist = norm( r(:,ii) - r(:,jj) + nL(:,kk) );
