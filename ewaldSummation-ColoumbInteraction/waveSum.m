@@ -9,16 +9,16 @@ function UFourierSum = waveSum(a1,a2,a3,r,q,N,nImag,L,alpha)
     pKVec = makePeriodicBox(b1, b2, b3, L, nImag);
     
     UFourierSum = 0;
-    for kk=1:nImag
-        strucFac = 0;
+    for kk=1:5
         kVec = pKVec(:,kk);
         kMag = norm(kVec);
         if kMag~=0
+            strucFac = 0;
             for ii=1:N
-                strucFac = strucFac + q(ii) * exp(1j*dot(kVec,r(:,ii)) );
+                strucFac = strucFac + q(ii) * exp(2*pi*1j*dot(kVec,r(:,ii)) );
             end
-            UFourierSum = UFourierSum + 4*pi*exp(-kMag^2/(4*alpha))* (abs(strucFac)/kMag)^2;
+            UFourierSum = UFourierSum + exp(-(pi*kMag/alpha)^2)* (abs(strucFac)/kMag)^2;
         end
     end
-    UFourierSum = UFourierSum/(2*Vol);
+    UFourierSum = UFourierSum/(2*pi*Vol);
 end

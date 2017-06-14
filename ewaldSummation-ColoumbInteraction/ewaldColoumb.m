@@ -2,16 +2,15 @@
 % electrostatic energy of a system of charges due to Coloumbic interaction
 clear; clc;
 
-N = 4; % Number of particles per box
-alpha = 0.8; % Ewald parameter
-L = 1; % unit cell
-
+N = 2; % Number of particles per box
 q1 = ones(N/2,1);
 q2 = -ones(N/2,1); % satisfy neutral charge condition
 q = cat(1,q1,q2);
-% nBoxes = 25^3; % number of periodic boxes
-nReal = 25^3;
-nImag = 25^3;
+
+nReal = 15^3; % number of terms in real sum
+nImag = 25^3; % number of terms in fourier sum
+alpha = 0.8; % Ewald parameter
+L = 1; % unit cell
 a1 = [1;0;0]; % lattice vectors
 a2 = [0;1;0];
 a3 = [0;0;1];
@@ -26,21 +25,23 @@ r = rand(3,N);
 
 %% Ewald summation
 
-% nRealList = (3:2:35).^3;
-% URealSum = zeros(length(nRealList),1);
-% for ii=1:length(nRealList)
-%     nReal = nRealList(ii);
-%     URealSum(ii)    = realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
-% end
-% plot(nRealList, abs(URealSum), 'linewidth', 2);
+nRealList = (3:2:35).^3;
+URealSum = zeros(length(nRealList),1);
+for ii=1:length(nRealList)
+    nReal = nRealList(ii);
+    URealSum(ii)    = realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
+end
+set(figure(1), 'position', [3000 1000 800 700]);
+plot(nRealList, abs(URealSum), 'linewidth', 2);
 
-nImagList = (3:2:15).^3;
+nImagList = (3:2:25).^3;
 UFourierSum = zeros(length(nImagList),1);
 for ii=1:length(nImagList)
     nImag = nImagList(ii);
     UFourierSum(ii) = waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
 end
+set(figure(2), 'position', [3000 50 800 700]);
 plot(nImagList, UFourierSum,'linewidth', 2);
 
-% USelf = selfInterac(q,alpha);
+USelf = sum(q.^2) * alpha/sqrt(pi);
 % Utot =URealSum + UFourierSum - USelf;
