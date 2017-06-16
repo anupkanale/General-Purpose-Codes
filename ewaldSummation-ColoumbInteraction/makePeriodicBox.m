@@ -1,6 +1,6 @@
 function nL = makePeriodicBox(iVec, jVec, kVec, L, nTerms)
     
-    nx = floor(nTerms^(1/3)/2);
+    nx = floor(nTerms/2);
     ny = nx; nz = nx;
     nL = zeros(3,nTerms);
     index=0;
@@ -15,5 +15,6 @@ function nL = makePeriodicBox(iVec, jVec, kVec, L, nTerms)
 end
 
 % Questions
-% 1. nReal and nImag have to be certain specific valuess right? because
-% can't take individual vectors, have to take vectors
+% 1. nReal and nImag can't take any arbit value, right? because
+% can't take individual vectors, have to take entire layer of boxes into
+% account.

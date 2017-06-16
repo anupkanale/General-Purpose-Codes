@@ -1,22 +1,31 @@
 % Short-range/Real-space sum contribution
 
-function URealSum = realSum(a1,a2,a3,r,q,N,nReal,L,alpha)
-
-    nL = makePeriodicBox(a1, a2, a3, L, nReal);
-    rrCut = (L/2)^2;
-    
+function URealSum = realSum(r,q,N,nReal,L,alpha)
+    rCut = L/2;
     URealSum = 0;
-    for kk=1:nReal % periodic box #
-        for ii=1:N
-        for jj=1:N
-            dist = norm( r(:,ii) - r(:,jj) + nL(:,kk) );
-            if (dist~=0)% && dist^2<=rrCut)
-                URealSum = URealSum + q(ii)*q(jj)/dist * erfc(dist*alpha);
+    for kk=1:nReal % sum over periodic boxes
+    for ii=1:N
+    for jj=ii+1:N
+        for index=1:3 % Periodic BC- pulling particles back in box
+            if r(index,jj)>r(index,ii)+L/2
+                r(index,jj) = r(index,jj) - L;
+            elseif r(index,jj)<r(index,ii)-L/2
+                r(index,jj) = r(index,jj) + L;
             end
         end
+        rij = r(:,jj) - r(:,ii);
+        dist = norm(rij);
+        if dist<=rCut % Minimum Image convention
+            temp = q(ii)*q(jj)/dist * erfc(dist*alpha);
+            URealSum = URealSum + temp;
         end
     end
-    % halve to account for double counting, i.e., ii-jj and jj-ii pair
-    % interaction is the same but has been counted twice
-    URealSum= URealSum/2;
+    end
+    end
 end
+
+% Notes on Algorithm
+% ---------------------------
+% 1. real space sum is truncated by rCut, which equals half the primary box
+% length
+% 2. this ensures that is is computed only in the primary box
