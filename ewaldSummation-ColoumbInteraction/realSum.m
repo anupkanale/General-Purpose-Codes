@@ -3,26 +3,31 @@
 function URealSum = realSum(r,q,N,nReal,L,alpha)
     rCut = L/2;
     URealSum = 0;
-    for kk=1:nReal % sum over periodic boxes
-    for ii=1:N
-    for jj=ii+1:N
-        for index=1:3 % Periodic BC- pulling particles back in box
-            if r(index,jj)>r(index,ii)+L/2
-                r(index,jj) = r(index,jj) - L;
-            elseif r(index,jj)<r(index,ii)-L/2
-                r(index,jj) = r(index,jj) + L;
+%     for kk=1:nReal % sum over periodic boxes
+    for jj=1:N
+    
+    
+        for ll=jj+1:N
+            rTemp = r;
+            for index=1:3 % Periodic BC- pulling particles back in box
+                if rTemp(index,ll)>rTemp(index,jj)+L/2
+                    rTemp(index,ll) = rTemp(index,ll) - L;
+                elseif rTemp(index,ll)<rTemp(index,jj)-L/2
+                    rTemp(index,ll) = rTemp(index,ll) + L;
+                end
+            end
+
+%             rjl = rTemp(:,ll) - rTemp(:,jj);
+            dist = norm(rTemp(:,ll) - rTemp(:,jj));
+            if dist<=rCut % Minimum Image convention
+                temp = q(jj)*q(ll)/dist * erfc(dist*alpha);%*heaviside(rCut-dist);
+                URealSum = URealSum + temp;
             end
         end
-        rij = r(:,jj) - r(:,ii);
-        dist = norm(rij);
-        if dist<=rCut % Minimum Image convention
-            temp = q(ii)*q(jj)/dist * erfc(dist*alpha);
-            URealSum = URealSum + temp;
-        end
     end
-    end
-    end
+%     end
 end
+
 
 % Notes on Algorithm
 % ---------------------------
