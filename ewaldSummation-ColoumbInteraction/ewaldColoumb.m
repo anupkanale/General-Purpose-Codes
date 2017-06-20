@@ -42,11 +42,12 @@ fclose(fHandle);
 
 %% Problem setup-- Assign charges & positions, set parameters
 nReal = 1; % number of terms in real sum
-nImag = 5^3; % number of terms in fourier sum
+% nImag = 5; % number of terms in fourier sum
+nImag = 0;
 alpha = 5.6/L; % Ewald parameter
-a1 = [1;0;0]; % lattice vectors
-a2 = [0;1;0];
-a3 = [0;0;1];
+a1 = [1;0;0]*angst; % lattice vectors
+a2 = [0;1;0]*angst;
+a3 = [0;0;1]*angst;
 eps0 = 8.85e-12;
 kB = 1.38e-23;
 const = 1/(4*pi*eps0*kB);
@@ -59,4 +60,3 @@ UIntra = -const* intraSum(r,q,alpha,M,L);
 UFourierSum = const* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
 
 % Utot =URealSum + UFourierSum + USelf +UIntra;
-
