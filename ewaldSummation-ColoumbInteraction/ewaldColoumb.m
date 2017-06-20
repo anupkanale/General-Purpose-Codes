@@ -54,10 +54,9 @@ const = 1/(4*pi*eps0*kB);
 %% Ewald summation
 
 USelf       = -const*  sum(q.^2)*alpha/sqrt(pi);
+UIntra = -const* intraSum(r,q,alpha,M,L);
 % URealSum    = const* realSum(r,q,N,nReal,L,alpha);
 UFourierSum = const* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
-
-UIntra = -const* intraSum(r,q,alpha,M,L);
 
 % Utot =URealSum + UFourierSum + USelf +UIntra;
 

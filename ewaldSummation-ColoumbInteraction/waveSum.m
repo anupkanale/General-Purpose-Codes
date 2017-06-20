@@ -6,7 +6,7 @@ function UFourierSum = waveSum(a1,a2,a3,r,q,N,nImag,L,alpha)
     b1 = cross(a2,a3)/dot(a1,cross(a2,a3));
     b2 = cross(a3,a1)/dot(a1,cross(a2,a3));
     b3 = cross(a1,a2)/dot(a1,cross(a2,a3));
-    pKVec = getk(b1, b2, b3,120,L);
+    pKVec = getk(b1, b2, b3,5);
     kMax = 5;
     
     UFourierSum = 0;
@@ -25,13 +25,13 @@ function UFourierSum = waveSum(a1,a2,a3,r,q,N,nImag,L,alpha)
     UFourierSum = UFourierSum/(2*pi*Vol);
 end
 
-function kVector = getk(b1, b2, b3,n,L)
+function kVector = getk(b1, b2, b3,n)
     kVector = [];
     index=1;
     for n1=-n:n
         for n2=-n:n
             for n3=-n:n
-                kVector(:,index) = 1/L*(n1*b1+n2*b2+n3*b3)*1e10;
+                kVector(:,index) = n1*b1+n2*b2+n3*b3;
                 index=index+1;
             end
         end
