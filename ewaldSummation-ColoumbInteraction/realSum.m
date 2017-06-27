@@ -1,36 +1,43 @@
 % Short-range/Real-space sum contribution
 
-function URealSum = realSum(r,q,N,nReal,L,alpha)
+function URealSum = realSum(a1,a2,a3,r,q,N,nReal,L,alpha)
     rCut = L/2;
     URealSum = 0;
-%     for kk=1:nReal % sum over periodic boxes
+    nVec = L*getn(a1,a2,a3,nReal);
+    
+    for kk=1:(2*nReal+1)^3 % sum over periodic boxes
     for jj=1:N
-    
-    
-        for ll=jj+1:N
-            rTemp = r;
-            for index=1:3 % Periodic BC- pulling particles back in box
-                if rTemp(index,ll)>rTemp(index,jj)+L/2
-                    rTemp(index,ll) = rTemp(index,ll) - L;
-                elseif rTemp(index,ll)<rTemp(index,jj)-L/2
-                    rTemp(index,ll) = rTemp(index,ll) + L;
-                end
-            end
+        rTemp = r;
+        for ll=1:N
+%             for index=1:3 % Periodic BC- pulling particles back in box
+%                 if rTemp(index,ll)>rTemp(index,jj)+L/2
+%                     rTemp(index,ll) = rTemp(index,ll) - L;
+%                 elseif rTemp(index,ll)<rTemp(index,jj)-L/2
+%                     rTemp(index,ll) = rTemp(index,ll) + L;
+%                 end
+%             end
 
-%             rjl = rTemp(:,ll) - rTemp(:,jj);
-            dist = norm(rTemp(:,ll) - rTemp(:,jj));
-            if dist<=rCut % Minimum Image convention
-                temp = q(jj)*q(ll)/dist * erfc(dist*alpha);%*heaviside(rCut-dist);
+            rjl = rTemp(:,ll) - rTemp(:,jj) + nVec(:,kk);
+            distance = norm(rjl);
+            dummy = alpha*distance;
+            if distance~=0 % && distance<=rCut % Minimum Image convention
+                temp = q(jj)*q(ll)/distance * erfc(distance*alpha);%*heaviside(rCut-dist);
                 URealSum = URealSum + temp;
             end
         end
     end
-%     end
+    end
 end
 
-
-% Notes on Algorithm
-% ---------------------------
-% 1. real space sum is truncated by rCut, which equals half the primary box
-% length
-% 2. this ensures that is is computed only in the primary box
+function nVector = getn(a1,a2,a3,n)
+    nVector = zeros(3,(2*n+1)^3);
+    index=1;
+    for n1=-n:n
+        for n2=-n:n
+            for n3=-n:n
+                nVector(:,index) = n1*a1+n2*a2+n3*a3;
+                index=index+1;
+            end
+        end
+    end
+end
