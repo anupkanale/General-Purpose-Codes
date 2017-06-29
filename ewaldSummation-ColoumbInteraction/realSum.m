@@ -1,14 +1,14 @@
 % Short-range/Real-space sum contribution
 
 function UReal = realSum(a1,a2,a3,r,q,N,nReal,L,alpha)
-    rCut = L/2;
+    rCut = L/2; % cut-off distance for min. image conv.
+    nVec = L*getn(a1,a2,a3,nReal); % periodicity vector
+
     UReal = 0;
-    nVec = L*getn(a1,a2,a3,nReal);
-    
     for kk=1:(2*nReal+1)^3 % sum over periodic boxes
     for jj=1:N
         rTemp = r;
-        for ll=1:N
+        for ll=jj+1:N
             for index=1:3 % Periodic BC- pulling particles back in box
                 if rTemp(index,ll)>rTemp(index,jj)+L/2
                     rTemp(index,ll) = rTemp(index,ll) - L;
@@ -16,7 +16,7 @@ function UReal = realSum(a1,a2,a3,r,q,N,nReal,L,alpha)
                     rTemp(index,ll) = rTemp(index,ll) + L;
                 end
             end
-
+            
             rjl = rTemp(:,ll) - rTemp(:,jj) + nVec(:,kk);
             distance = norm(rjl);
             if distance~=0 && distance<=rCut % Minimum Image convention
@@ -26,7 +26,6 @@ function UReal = realSum(a1,a2,a3,r,q,N,nReal,L,alpha)
         end
     end
     end
-    UReal = UReal/2;
 end
 
 function nVector = getn(a1,a2,a3,n)

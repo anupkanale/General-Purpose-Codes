@@ -38,14 +38,14 @@ a2 = [0;1;0];
 a3 = [0;0;1];
 eps0 = 8.85e-12;
 kB = 1.38e-23;
-const = 1/(4*pi*eps0*kB);
+kB4pieps0_Inv = 1/(kB*4*pi*eps0);
 
 %% Ewald summation
 
-USelf       = -const* sum(q.^2)*alpha/sqrt(pi);
-UIntra      = -const* intraSum(r,q,alpha,M,L);
-UReal       =  const* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
-UFourier    =  const* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
+USelf       = -kB4pieps0_Inv* sum(q.^2)*alpha/sqrt(pi);
+UIntra      = -kB4pieps0_Inv* intraSum(r,q,alpha,M,L);
+UReal       =  kB4pieps0_Inv* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
+UFourier    =  kB4pieps0_Inv* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
 
 Utot =UReal + UFourier + USelf + UIntra;
 
