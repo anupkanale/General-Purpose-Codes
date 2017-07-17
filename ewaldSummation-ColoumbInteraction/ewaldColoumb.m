@@ -10,7 +10,7 @@ filename = 'validationData/spce_sample_config_periodic1.txt';
 data = readtable(filename);
 data(:,1) = []; % delete serial number
 
-r = transpose(table2array(data(:,1:3)))*angst;
+r = transpose(table2array(data(:,1:3)));
 ions = char(table2array(data(:,4)));
 q = zeros(length(ions),1);
 for ii=1:length(ions)
@@ -20,37 +20,55 @@ for ii=1:length(ions)
         q(ii) = 1;
     end
 end
-q = q*charge;
 
-N = length(ions); % number of charged particles
+N = length(q); % number of charged particles
 M=N/3; % number of molecules
 fHandle = fopen(filename, 'r');
 firstLine = sscanf(fgetl(fHandle), '%f');
-L = firstLine(1)*angst;
+L = firstLine(1);
 fclose(fHandle);
 
 %% Problem setup-- Assign charges & positions, set parameters
 nReal = 0;
-nImag = 5;
+nImag = 15;
 alpha = 5.6/L; % Ewald parameter
 a1 = [1;0;0];  % lattice vectors
 a2 = [0;1;0];
 a3 = [0;0;1];
 eps0 = 8.85e-12;
 kB = 1.38e-23;
-kB4pieps0_Inv = 1/(kB*4*pi*eps0);
+kB4pieps0_Inv = 1; %1/(kB*4*pi*eps0);
+const = 1; %charge^2/angst;
 
 %% Ewald summation
 
-USelf       = -kB4pieps0_Inv* sum(q.^2)*alpha/sqrt(pi);
-UIntra      = -kB4pieps0_Inv* intraSum(r,q,alpha,M,L);
-UReal       =  kB4pieps0_Inv* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
-UFourier    =  kB4pieps0_Inv* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
+alpha = 4; L = 2.0; rCut = 1.0;
+N = 8;
+qCsCl = [1;1;1;1;1;1;1;1;-1;-1;-1;-1;-1;-1;-1;-1];
+rCsCl = [0.5 1.5 0.5 1.5 0.5 1.5 0.5 1.5 0 1 0 1 0 1 0 1;...
+         0.5 0.5 1.5 1.5 0.5 0.5 1.5 1.5 0 0 1 1 0 0 1 1;...
+         0.5 0.5 0.5 0.5 1.5 1.5 1.5 1.5 0 0 0 0 1 1 1 1];
 
-Utot =UReal + UFourier + USelf + UIntra;
+qNaCl = [-1;-1;-1;-1;1;1;1;1];
+rNaCl = [0 1 1 0 1 0 0 1;...
+         0 1 0 1 0 1 0 1;...
+         0 0 1 1 0 0 1 1];
 
-% %% Visualize primary cell
-% %-----------------------
+q = qCsCl;
+r = rCsCl;
+
+UReal       =  const* kB4pieps0_Inv* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
+% UFourier    =  const* kB4pieps0_Inv* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
+USelf       = -const* kB4pieps0_Inv* sum(q.^2)*alpha/sqrt(pi);
+% UIntra      = -const* kB4pieps0_Inv* intraSum(r,q,alpha,M,L);
+
+
+UFourier = waveSum_fort(r,q,N,alpha);
+
+Utot =UReal + UFourier + USelf; % + UIntra;
+
+%% Visualize primary cell
+%-----------------------
 % set(figure(1), 'position', [500 500 1000 1000]);
 % set(gcf,'color','w');
 % for ii=1:300
@@ -96,3 +114,32 @@ Utot =UReal + UFourier + USelf + UIntra;
 % title('Convergence plot for real sum');
 % xlabel('Number of periodic shells'); ylabel('RealSum');
 % legend(legendInfo, 'location', 'best');
+
+
+% Test problem for Madelung Constant
+% L = 1;
+% index = 1;
+% layer = 23;
+% for i=-layer:layer
+%     for j=-layer:layer
+%         for k=-layer:layer
+%             rList(:,index) = [i; j; k];
+%             index = index+1;
+%         end
+%     end
+% end
+% N = size(rList,2);
+% alpha = 1/(0.4*sqrt(2));
+% r = rList;
+% nReal = 0;
+% q=zeros(N,1);
+% for ii=1:N
+%     if rem(ii,2)==0
+%         q(ii) = 1;
+%     else
+%         q(ii) = -1;
+%     end
+% end
+% 
+% disp(realSum(a1,a2,a3,r,q,N,nReal,L,alpha));
+% disp(waveSum(a1,a2,a3,r,q,N,nImag,L,alpha));
