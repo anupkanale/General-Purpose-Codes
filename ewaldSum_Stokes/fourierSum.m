@@ -11,12 +11,15 @@ function uFourier = fourierSum(N,rVecM,rVec,fVec,alpha,L,a1,a2,a3,nImag)
         kVec = pVec(:,kk);
         kMag = norm(kVec);
         
-        B = pi*alpha^2/tau0*(eye(3)*kMag^2 + kVec*kVec) * phiFunc(pi*alpha*kMag^2, 1);
-        expterm = exp(-2*pi*1j*dot(kVec,rVecM));
-        for ii=1:N
-            fFourier = fFourier + fVec(:,ii) * exp(2*pi*1j*dot(kVec,rVec(:,ii)));
+        if kMag~=0
+            expterm = exp(-2*pi*1j*dot(kVec,rVecM));
+            B = pi*alpha^2/tau0*(eye(3)*kMag^2 + kVec*kVec') * phiFunc(pi*alpha*kMag^2, 1);
+            fFourier = 0; % fourier transformed force vector
+            for ii=1:N
+                fFourier = fFourier + fVec(:,ii) * exp(2*pi*1j*dot(kVec,rVec(:,ii)));
+            end
+
+            uFourier = uFourier + expterm*B*fFourier;
         end
-        
-        uFourier = uFourier + expterm*B*fFourier;
     end
 end
