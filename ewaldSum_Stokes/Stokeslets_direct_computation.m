@@ -12,11 +12,14 @@ nPoints = nCols*nRows;
 lim = 1;
 rx = linspace(-lim,lim,nCols);
 ry = linspace(-lim,lim,nRows);
-rVec = zeros(2,nPoints);
+rz = linspace(-lim,lim,nZ);
+rVec = zeros(3,nPoints);
 for ii=1:nRows
     for jj=1:nCols
-        pointNum = (ii-1)*nCols+jj;
-        rVec(:,pointNum) = [rx(jj); ry(ii)];
+        for kk=1:nZ
+            pointNum = (ii-1)*nCols+jj;
+            rVec(:,pointNum) = [rx(jj); ry(ii); rz(kk)];
+        end
     end
 end
 
