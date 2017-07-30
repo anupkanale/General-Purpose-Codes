@@ -5,26 +5,58 @@ eta = 1;
 % N = 2; % number of stokeslets
 
 % grid points
-nCols = 11;
-nRows = 11;
-nPoints = nCols*nRows;
-
+nX = 3;
+nY = 3;
+nZ = 3;
+nPoints = nX*nY*nZ;
 lim = 1;
-rx = linspace(-lim,lim,nCols);
-ry = linspace(-lim,lim,nRows);
+rx = linspace(-lim,lim,nX);
+ry = linspace(-lim,lim,nY);
 rz = linspace(-lim,lim,nZ);
 rVec = zeros(3,nPoints);
-for ii=1:nRows
-    for jj=1:nCols
-        for kk=1:nZ
-            pointNum = (ii-1)*nCols+jj;
+for kk=1:nZ
+    for ii=1:nX
+        for jj=1:nY
+            pointNum = (ii-1)*nX + jj + (kk-1)*nX*nY;
             rVec(:,pointNum) = [rx(jj); ry(ii); rz(kk)];
         end
     end
 end
 
+
+
+
+
+% get i,j,k back from pointNum
+for pointNum=1:nPoints
+    kk = floor((pointNum-1)/(nX*nY)) + 1;
+    ii = rem(pointNum-1,nX*nY) + 1;
+    jj = rem(pointNum-1,nX) + 1;
+end
+
+% % 3D plot to check if point numbers have been assigned correctly
+% for kk=1:nZ
+%     for ii=1:nX
+%         for jj=1:nY
+%             pointNum = (ii-1)*nX + jj + (kk-1)*nX*nY;
+%             rVec(:,pointNum) = [rx(jj); ry(ii); rz(kk)];
+%             
+%             scatter3(rVec(1,pointNum), rVec(2,pointNum), rVec(3,pointNum),...
+%                 'filled', 'markerfacecolor', [0.3*(kk-1) 0.3*(kk-1) 0.3*(kk-1)]);
+%             string = strcat(num2str(ii), num2str(jj), num2str(kk), ':', num2str(pointNum));
+%             text(rVec(1,pointNum), rVec(2,pointNum), rVec(3,pointNum), string);
+%             hold on;
+%         end
+%     end
+% end
+% xlabel('X-axis'); ylabel('Y-axis'); zlabel('Z-axis');
+
+
+
+
+
 % point force location
-fVec = zeros(2,nPoints);
+fVec = zeros(3,nPoints);
 % fVec(:,(nPoints+1)/2) = [1; 0];
 fLoc = [(nPoints+1)/2 + 2, (nPoints+1)/2 - 2];
 
@@ -60,8 +92,9 @@ end
 
 % Convert to format appropriate for plotting
 for pointNum=1:nPoints
-    ii = floor((pointNum-1)/nCols) + 1;
-    jj = rem(pointNum-1,nCols) + 1;
+    ii = floor((pointNum-1)/nX) + 1;
+    jj = rem(pointNum-1,nX) + 1;
+    kk = floor((pointNum-1)/(nX*nY));
     u(ii,jj) = uVec(1,pointNum);
     v(ii,jj) = uVec(2,pointNum);
 end
@@ -81,9 +114,3 @@ grid minor;
 %% Verification Lines
 dummy = rVec';
 dummy2 = fVec';
-% % Check if the point numbers are being created correctly
-% for pointNum=1:nPoints
-%     ii = floor((pointNum-1)/nCols) + 1;
-%     jj = rem(pointNum-1,nCols) + 1;
-%     pointLocation(ii,jj) = (ii-1)*nCols+jj;
-% end

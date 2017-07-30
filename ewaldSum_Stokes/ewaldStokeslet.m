@@ -2,19 +2,21 @@
 clear; close all
 
 N = 2; % number of stokeslets
-nCols = 11;
-nRows = 11;
-nPoints = nCols*nRows;
-
+nX = 3;
+nY = 3;
+nZ = 3;
+nPoints = nX*nY*nZ;
 lim = 1;
-rx = linspace(-lim,lim,nCols);
-ry = linspace(-lim,lim,nRows);
+rx = linspace(-lim,lim,nX);
+ry = linspace(-lim,lim,nY);
 rz = linspace(-lim,lim,nZ);
 rVec = zeros(3,nPoints);
-for ii=1:nRows
-    for jj=1:nCols
-        pointNum = (ii-1)*nCols+jj;
-        rVec(:,pointNum) = [rx(jj); ry(ii); rz(kk)];
+for kk=1:nZ
+    for ii=1:nX
+        for jj=1:nY
+            pointNum = (ii-1)*nX + jj + (kk-1)*nX*nY;
+            rVec(:,pointNum) = [rx(jj); ry(ii); rz(kk)];
+        end
     end
 end
 
