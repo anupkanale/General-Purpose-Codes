@@ -1,13 +1,13 @@
-clear;
-close all;
+clear; close all;
 
 eta = 1;
 % N = 2; % number of stokeslets
 
 % grid points
-nX = 3;
-nY = 3;
-nZ = 3;
+res = 7;
+nX = res;
+nY = res;
+nZ = res;
 nPoints = nX*nY*nZ;
 lim = 1;
 rx = linspace(-lim,lim,nX);
@@ -23,16 +23,6 @@ for kk=1:nZ
     end
 end
 
-
-
-
-
-% get i,j,k back from pointNum
-for pointNum=1:nPoints
-    kk = floor((pointNum-1)/(nX*nY)) + 1;
-    ii = rem(pointNum-1,nX*nY) + 1;
-    jj = rem(pointNum-1,nX) + 1;
-end
 
 % % 3D plot to check if point numbers have been assigned correctly
 % for kk=1:nZ
@@ -50,21 +40,25 @@ end
 %     end
 % end
 % xlabel('X-axis'); ylabel('Y-axis'); zlabel('Z-axis');
-
-
-
-
-
+% 
+% % get i,j,k back from pointNum
+% for pointNum=1:nPoints
+%     kk = floor((pointNum-1)/(nX*nY)) + 1;
+%     jj = rem(pointNum-1,nX) + 1;
+%     ii = floor((pointNum-(kk-1)*nX*nY-1)/nX) + 1;
+% end
+% 
+% 
+% 
 % point force location
 fVec = zeros(3,nPoints);
-% fVec(:,(nPoints+1)/2) = [1; 0];
-fLoc = [(nPoints+1)/2 + 2, (nPoints+1)/2 - 2];
+fLoc = [(nPoints+1)/2 + 1, (nPoints+1)/2 - 1];
 
-fVec(:,fLoc(1)) = [1; 0];
-fVec(:,fLoc(2)) = [-1; 0];
+fVec(:,fLoc(1)) = [1; 0; 0];
+fVec(:,fLoc(2)) = [-1; 0; 0];
 
 % Compute flowfield
-uVec = zeros(2,nPoints);
+velVec = zeros(3,nPoints);
 for ii=1:nPoints
     rVecI = rVec(:,ii);
     sum = 0;
@@ -77,7 +71,7 @@ for ii=1:nPoints
             sum = sum + hiMat *fVec(:,jj);
         end
     end
-    uVec(:,ii) = sum;
+    velVec(:,ii) = sum;
 end
 
 %% Plotting
@@ -85,32 +79,33 @@ end
 scale = 500;
 set(figure, 'Position', [2700, 1000, 1000, 700]);
 title('Streamlines for slow past a Stokeslet');
+
+[X,Y,Z] = sphere(4);
 for ii=1:length(fLoc)
-    plot(rVec(1,fLoc(ii)), rVec(2,fLoc(ii)), 'markersize', 5);
+    scatter3(rVec(1,fLoc(ii)), rVec(2,fLoc(ii)), rVec(3,fLoc(ii)), 'filled');
     hold on;
 end
+xlim([-1 1]); ylim([-1 1]); zlim([-1 1])
 
 % Convert to format appropriate for plotting
+u3d = zeros(nX,nY,nZ);
+v3d = zeros(nX,nY,nZ);
+w3d = zeros(nX,nY,nZ);
 for pointNum=1:nPoints
-    ii = floor((pointNum-1)/nX) + 1;
+    kk = floor((pointNum-1)/(nX*nY)) + 1;
     jj = rem(pointNum-1,nX) + 1;
-    kk = floor((pointNum-1)/(nX*nY));
-    u(ii,jj) = uVec(1,pointNum);
-    v(ii,jj) = uVec(2,pointNum);
+    ii = floor((pointNum-(kk-1)*nX*nY-1)/nX) + 1;
+    u3d(ii,jj,kk) = velVec(1,pointNum);
+    v3d(ii,jj,kk) = velVec(2,pointNum);
+    w3d(ii,jj,kk) = velVec(3,pointNum);
 end
 
-% Plot flowfield
-q = quiver(rx,ry,u*scale,v*scale);
-q.Color = 'blue';
-q.LineWidth = 1.5;
-
-% starty = linspace(-0.9,1.1,nCols);
-% startx = -1*ones(size(starty));
-% h = streamline(rx,ry,u,v,startx,starty);
-% set(h, 'LineWidth', 2, 'Color', 'red');
+% Plot flowfield in 2D
+u2d = squeeze(u3d(:,:,(nZ+1)/2));
+v2d = squeeze(v3d(:,:,(nZ+1)/2));
+quiv = quiver(rx,ry,u2d*scale,v2d*scale);
+quiv.Color = 'blue';
+quiv.LineWidth = 1.5;
+view(2);
 axis equal;
 grid minor;
-
-%% Verification Lines
-dummy = rVec';
-dummy2 = fVec';
