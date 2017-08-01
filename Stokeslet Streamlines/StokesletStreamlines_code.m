@@ -17,12 +17,12 @@ for ii=1:length(rx)
         if norm(r)==0
             r=[eps; eps]; % this is done to avoid the singularity at (0,0)
             continue;
-        end;
+        end
         rDotF = r(1)*F(1) + r(2)*F(2);
         u(ii,jj) = 1/(8*pi*eta*norm(r)) *(F(1) + rDotF*r(1)/norm(r));
         v(ii,jj) = 1/(8*pi*eta*norm(r)) *(F(2) + rDotF*r(2)/norm(r));
-    end;
-end;
+    end
+end
 
 %Plot streamlines
 scale=1000;
