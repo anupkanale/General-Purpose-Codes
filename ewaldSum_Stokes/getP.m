@@ -4,8 +4,7 @@ function periodicVec = getP(v1,v2,v3,n,L)
     for n1=-n:n
         for n2=-n:n
             for n3=-n:n
-                periodicVec(:,index) = n1*v1*L(1)+...
-                    n2*v2*L(2) + n3*v3*L(3);
+                periodicVec(:,index) = n1*v1*L(1)+n2*v2*L(2) + n3*v3*L(3);
                 index=index+1;
             end
         end
