@@ -67,30 +67,52 @@ Utot = UReal + UFourier + USelf + UIntra;
 % set(gca,'xtick',[], 'ytick',[], 'ztick',[])
 
 %% Test for convergence of real sum
-nList = 0:10;
+nList = [0,1,2,4,8];
 len = length(nList);
 alphaList = 5.6/L*(1:3);
-UPlot = zeros(length(nList),length(alphaList));
+UPlot1 = zeros(length(nList),length(alphaList));
 
 for jj=1:length(alphaList)
     alpha= alphaList(jj);
-    parfor ii=1:len 
+    parfor ii=1:len
         nReal = nList(ii);
-        UReal  = kB4pieps0_Inv*charge^2/angst* waveSum(a1,a2,a3,r,q,N,nReal,L,alpha);
-        UPlot(ii,jj) = UReal;
+        UReal  = kB4pieps0_Inv*charge^2/angst* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
+        UPlot1(ii,jj) = UReal;
     end
 end
 
-%% Plot
 close all;
-set(figure(), 'position', [50 50 1000 800]);
+set(figure(200), 'position', [50 50 1000 800]);
 legendInfo = cell(length(alphaList),1);
 for jj=1:length(alphaList)
-    legendInfo{length(alphaList)-jj+1} =...
-        strcat('\alpha = ', num2str(alphaList(jj)));
-    plot(nList, UPlot(:,jj), 'o-', 'linewidth', 1.5);
+    subplot(2,1,1)
+    plot(nList, UPlot1(:,jj), 'o-', 'linewidth', 1.5);
     hold on;
 end
 title('Convergence plot for real space sum');
 xlabel('Number of periodic shells'); ylabel('realSum');
-legend(legendInfo, 'location', 'best');
+
+%% Test for convergence of Imag sum
+nList = 4:2:16;
+len = length(nList);
+alphaList = 5.6/L*(1:3);
+UPlot2 = zeros(length(nList),length(alphaList));
+
+for jj=1:length(alphaList)
+    alpha= alphaList(jj);
+    parfor ii=1:len
+        nImag = nList(ii);
+        UFourier  = kB4pieps0_Inv*charge^2/angst* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
+        UPlot2(ii,jj) = UFourier;
+    end
+end
+
+set(figure(201), 'position', [50 1050 1000 800]);
+for jj=1:length(alphaList)
+    subplot(2,1,2)
+    plot(nList, UPlot2(:,jj), 'o-', 'linewidth', 1.5);
+    hold on;
+end
+title('Convergence plot for k-space sum');
+xlabel('Number of periodic shells'); ylabel('waveSum');
+legend('alpha1','alpha2','alpha3');
