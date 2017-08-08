@@ -1,4 +1,4 @@
-function uFourier = fourierSum(N,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nImag)
+function uFourier = fourierSum(nStokes,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nImag)
     uFourier = 0;
     
     tau0 = L(1)*L(2)*L(3); % volume of primary cell
@@ -14,7 +14,7 @@ function uFourier = fourierSum(N,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nImag)
         if kMag~=0
             B = 8*pi/kMag^4* (1+kMag^2/(4*xi^2))*(kMag^2*eye(3) - kVec*kVec');
             fFourier = 0; % fourier transformed force vector
-            for ii=1:N
+            for ii=1:nStokes
                 fFourier = fFourier + fVec(:,ii)...
                     * exp(-1j* kVec'*(r_fVec(:,ii)-rVecM) );
             end
@@ -22,4 +22,5 @@ function uFourier = fourierSum(N,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nImag)
             uFourier = uFourier + B*exp(-kMag^2/(4*xi^2))*fFourier;
         end
     end
+    uFourier = uFourier/tau0;
 end
