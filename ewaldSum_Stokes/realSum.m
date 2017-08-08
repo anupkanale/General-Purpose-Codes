@@ -1,4 +1,4 @@
-function uReal = realSum(nStokes,rVecM,r_fVec,fVec,alpha,L,a1,a2,a3,nReal)
+function uReal = realSum(nStokes,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nReal)
     uReal = 0;
     pVec = getP(a1,a2,a3,nReal,L);
 
@@ -15,8 +15,9 @@ function uReal = realSum(nStokes,rVecM,r_fVec,fVec,alpha,L,a1,a2,a3,nReal)
         end
         drMag = norm(dr);
         
-        A = pi/alpha^(1.5)*(drMag^2*eye(3) + dr * dr') * phiFunc(pi*drMag^2/alpha, 0.5);
-        A = A- 2/sqrt(alpha)*exp(-pi*drMag^2/alpha)*eye(3);
+        A = 2* (xi*exp(-xi^2*drMag^2)/(sqrt(pi)*drMag^2) + erfc(xi*drMag)/(2*drMag^3));
+        A = A* (drMag^2*eye(3) - dr*dr');
+        A = A- 4*xi*exp(-xi^2*drMag^2)/sqrt(pi) * eye(3);
         uReal = uReal + A * fVec(:,ii);
     end
     end

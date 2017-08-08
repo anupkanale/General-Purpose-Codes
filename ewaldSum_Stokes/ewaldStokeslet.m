@@ -2,10 +2,8 @@
 clear; %close all
 tic
 
-eta = 1;
-
 % grid points
-res = 15;
+res = 5;
 nX = res;
 nY = res*2+1;
 nZ = 1;
@@ -26,10 +24,10 @@ end
 
 % point force location
 nStokes = 2; % number of stokeslets
-fVec = zeros(3,nStokes);
+fVec = zeros(3,nPoints);
 r_fVec = [-0.1 0.1; 0 0 ; 0 0];
-fVec(:,1) = 5*[-1; 0; 0];
-fVec(:,2) = 5*[1; 0; 0];
+fVec(:,1) = [-1; 0; 0];
+fVec(:,2) = [1; 0; 0];
 % fVec(:,3) = [1; 0; 0];
 % fVec(:,4) = [-1; 0; 0];
 
@@ -39,30 +37,29 @@ a2 = [0;1;0];
 a3 = [0;0;1];
 nReal = 10;
 nImag = 10;
-% alphalist = 5*[1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3];
-% for aa=1:length(alphalist)
-alpha = 0.5; %alphalist(ii); %5e-3;
+xi = 10;
 
 %% compute flowfield
 velVec = zeros(3,nPoints);
 uReal  = zeros(3,nPoints);
 uFourier = zeros(3,nPoints);
-parfor mm=1:nPoints
+uSelf = zeros(3,nPoints);
+for mm=1:nPoints
     rVecM = rVec(:,mm);
     
-    uReal(:,mm) = realSum(nStokes,rVecM,r_fVec,fVec,alpha,L,a1,a2,a3,nReal);
-%     uFourier(:,mm) = 0;
-    uFourier(:,mm) = fourierSum(nStokes,rVecM,r_fVec,fVec,alpha,L,a1,a2,a3,nImag);
-    velVec(:,mm) = uReal(:,mm) + uFourier(:,mm);
+    uReal(:,mm) = realSum(nStokes,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nReal);
+    uFourier(:,mm) = fourierSum(nStokes,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nImag);
+    uSelf(:,mm) = 4*xi/sqrt(pi) * fVec(:,mm);
+    
+    velVec(:,mm) = uReal(:,mm) + uFourier(:,mm) - uSelf(:,mm);
 end
-dummy4 = uReal';
-dummy5 = uFourier';
+
 
 %% Post-processing
 save('ewald_Stokes_data');
 
 % clf(figure(2))
-set(figure(2), 'position', [1050 1050 850 700]);
+set(figure(), 'position', [1050 1050 850 700]);
 for ii=1:nStokes
     plot(r_fVec(1,ii), r_fVec(2,ii), 'or','markersize', 10, 'markerfacecolor', 'r');
     hold on;
@@ -104,23 +101,11 @@ xlim([-1.01 1.01]); ylim([-1.01 1.01]); % zlim([-0.5*L(3), 0.5*L(3)])
 % view(2);
 title('Ewald method');
 
-dummy = velVec';
-dummy2 = u3d';
-dummy3 = v3d';
-
-% probe(aa) = v3d(3,5);
-% end
-% plot(alphalist, probe, 'linewidth', 2)
+dummy = real(velVec');
+dummy2 = rVec';
+dummy3 = u3d';
+dummy4 = v3d';
+dummy5 = uReal';
+dummy6 = uFourier';
 
 toc
-
-% 3D plotting
-% [x,y,z] = meshgrid(rx,ry,rz);
-% quiv = quiver3(x,y,z,u3d,v3d,w3d);
-% quiv.Color = 'White';
-% quiv.LineWidth = 1.0;
-% Slice plot
-% xslice = 1;
-% yslice = 1;
-% zslice = 0.5;
-% slice(x,y,z,velMag3d,xslice,yslice,zslice)
