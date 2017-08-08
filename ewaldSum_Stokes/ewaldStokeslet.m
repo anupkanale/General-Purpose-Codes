@@ -3,7 +3,7 @@ clear; %close all
 tic
 
 % grid points
-res = 5;
+res = 7;
 nX = res;
 nY = res*2+1;
 nZ = 1;
@@ -26,8 +26,8 @@ end
 nStokes = 2; % number of stokeslets
 fVec = zeros(3,nPoints);
 r_fVec = [-0.1 0.1; 0 0 ; 0 0];
-fVec(:,1) = [-1; 0; 0];
-fVec(:,2) = [1; 0; 0];
+fVec(:,1) = 5*[-1; 0; 0];
+fVec(:,2) = 5*[1; 0; 0];
 % fVec(:,3) = [1; 0; 0];
 % fVec(:,4) = [-1; 0; 0];
 
@@ -101,11 +101,11 @@ xlim([-1.01 1.01]); ylim([-1.01 1.01]); % zlim([-0.5*L(3), 0.5*L(3)])
 % view(2);
 title('Ewald method');
 
-dummy = real(velVec');
-dummy2 = rVec';
-dummy3 = u3d';
-dummy4 = v3d';
-dummy5 = uReal';
-dummy6 = uFourier';
+dummyvel = real(velVec');
+dummyr = rVec';
+dummyu = u3d';
+dummyv = v3d';
+dummyreal = uReal';
+dummyfourier = uFourier';
 
 toc

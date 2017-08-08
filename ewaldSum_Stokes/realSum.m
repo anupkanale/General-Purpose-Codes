@@ -1,7 +1,7 @@
 function uReal = realSum(nStokes,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nReal)
     uReal = 0;
     pVec = getP(a1,a2,a3,nReal,L);
-
+    
     for nn=1:(2*nReal+1)^3
     for ii=1:nStokes
         dr = rVecM - r_fVec(:,ii) + pVec(nn);
