@@ -40,14 +40,14 @@ kB = 1.38e-23;
 kB4pieps0_Inv = 1/(kB*4*pi*eps0);
 
 %% Ewald summation
-USelf    = -kB4pieps0_Inv* charge^2/angst* sum(q.^2)*alpha/sqrt(pi);
-UIntra   = -kB4pieps0_Inv* charge^2/angst* intraSum(r,q,alpha,M,L);
-UReal    =  kB4pieps0_Inv* charge^2/angst* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
-UFourier =  kB4pieps0_Inv* charge^2/angst* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
+% USelf    = -kB4pieps0_Inv* charge^2/angst* sum(q.^2)*alpha/sqrt(pi);
+% UIntra   = -kB4pieps0_Inv* charge^2/angst* intraSum(r,q,alpha,M,L);
+% UReal    =  kB4pieps0_Inv* charge^2/angst* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
+% UFourier =  kB4pieps0_Inv* charge^2/angst* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
+% 
+% Utot = UReal + UFourier + USelf + UIntra;
 
-Utot = UReal + UFourier + USelf + UIntra;
-
-% %% Visualize primary cell
+%% Visualize primary cell
 % %-----------------------
 % set(figure(1), 'position', [500 500 1000 1000]);
 % set(gcf,'color','w');
@@ -82,37 +82,49 @@ for jj=1:length(alphaList)
 end
 
 close all;
-set(figure(200), 'position', [50 50 1000 800]);
-legendInfo = cell(length(alphaList),1);
+set(figure(), 'position', [50 50 1000 800]);
 for jj=1:length(alphaList)
-    subplot(2,1,1)
     plot(nList, UPlot1(:,jj), 'o-', 'linewidth', 1.5);
     hold on;
 end
-title('Convergence plot for real space sum');
-xlabel('Number of periodic shells'); ylabel('realSum');
+title('Convergence plot for real space sum', 'fontsize', 20);
+xlabel('Number of periodic shells', 'fontsize', 20); ylabel('realSum', 'fontsize', 20);
+legn = legend('\alpha_1 = 0.28','\alpha_2=0.56','\alpha_3=0.84');
+legn.FontSize = 20;
+set(gca,'fontsize',20)
 
 %% Test for convergence of Imag sum
-nList = 4:2:16;
-len = length(nList);
+nList2 = 4:2:16;
+len = length(nList2);
 alphaList = 5.6/L*(1:3);
-UPlot2 = zeros(length(nList),length(alphaList));
+UPlot2 = zeros(length(nList2),length(alphaList));
 
 for jj=1:length(alphaList)
     alpha= alphaList(jj);
     parfor ii=1:len
-        nImag = nList(ii);
+        nImag = nList2(ii);
         UFourier  = kB4pieps0_Inv*charge^2/angst* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
         UPlot2(ii,jj) = UFourier;
     end
 end
 
-set(figure(201), 'position', [50 1050 1000 800]);
+set(figure(), 'position', [50 50 1000 800]);
 for jj=1:length(alphaList)
-    subplot(2,1,2)
-    plot(nList, UPlot2(:,jj), 'o-', 'linewidth', 1.5);
+    plot(nList2, UPlot2(:,jj), 'o-', 'linewidth', 1.5);
     hold on;
 end
-title('Convergence plot for k-space sum');
-xlabel('Number of periodic shells'); ylabel('waveSum');
-legend('alpha1','alpha2','alpha3');
+title('Convergence plot for k-space sum', 'fontsize', 20);
+xlabel('Number of periodic shells', 'fontsize', 20); ylabel('waveSum', 'fontsize', 20);
+legn = legend('\alpha_1 = 0.28','\alpha_2=0.56','\alpha_3=0.84');
+legn.FontSize = 20;
+set(gca,'fontsize',20)
+
+%%
+save('ewald_coloumb_data')
+
+for ii=1:3
+    Uself(ii) = kB4pieps0_Inv* charge^2/angst*sum(q.^2)*alphaList(ii)/sqrt(pi);
+    Utot(ii) = UPlot1(5,ii) + UPlot2(7,ii) - Uself(ii);
+end
+plot(alphaList,Uself, 'linewidth',1.5);
+% ylim([-2e7 -1e7])
