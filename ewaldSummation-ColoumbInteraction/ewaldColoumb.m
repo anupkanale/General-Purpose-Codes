@@ -81,6 +81,7 @@ for jj=1:length(alphaList)
     end
 end
 
+%%
 close all;
 set(figure(), 'position', [50 50 1000 800]);
 for jj=1:length(alphaList)
@@ -89,8 +90,9 @@ for jj=1:length(alphaList)
 end
 title('Convergence plot for real space sum', 'fontsize', 20);
 xlabel('Number of periodic shells', 'fontsize', 20); ylabel('realSum', 'fontsize', 20);
-legn = legend('\alpha_1 = 0.28','\alpha_2=0.56','\alpha_3=0.84');
+legn = legend('\xi_1=0.28','\xi_2=0.56','\xi_3=0.84');
 legn.FontSize = 20;
+legn.Location = 'best';
 set(gca,'fontsize',20)
 
 %% Test for convergence of Imag sum
@@ -108,6 +110,7 @@ for jj=1:length(alphaList)
     end
 end
 
+%%
 set(figure(), 'position', [50 50 1000 800]);
 for jj=1:length(alphaList)
     plot(nList2, UPlot2(:,jj), 'o-', 'linewidth', 1.5);
@@ -115,16 +118,26 @@ for jj=1:length(alphaList)
 end
 title('Convergence plot for k-space sum', 'fontsize', 20);
 xlabel('Number of periodic shells', 'fontsize', 20); ylabel('waveSum', 'fontsize', 20);
-legn = legend('\alpha_1 = 0.28','\alpha_2=0.56','\alpha_3=0.84');
+legn = legend('\xi_1=0.28','\xi_2=0.56','\xi_3=0.84');
 legn.FontSize = 20;
+legn.Location = 'best';
 set(gca,'fontsize',20)
 
 %%
 save('ewald_coloumb_data')
 
+%%
 for ii=1:3
     Uself(ii) = kB4pieps0_Inv* charge^2/angst*sum(q.^2)*alphaList(ii)/sqrt(pi);
     Utot(ii) = UPlot1(5,ii) + UPlot2(7,ii) - Uself(ii);
 end
-plot(alphaList,Uself, 'linewidth',1.5);
+% plot(alphaList,Uself, 'linewidth',1.5);
 % ylim([-2e7 -1e7])
+
+
+plot(alphaList,-UPlot1(5,:), alphaList,-UPlot2(7,:), alphaList,Uself, alphaList, -Utot, 'linewidth',2);
+legn = legend('U_{real}','U_{Fourier}','U_{self}', 'U_{tot}');
+legn.FontSize = 20;
+legn.Location = 'best';
+set(gca,'fontsize',20)
+xlabel('\xi', 'fontsize', 20); ylabel('U', 'fontsize', 20);

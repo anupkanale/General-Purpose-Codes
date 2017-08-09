@@ -1,5 +1,6 @@
 % Program to illustrate the use of Ewald summations to calculate total
 % electrostatic energy of a system of charges due to Coloumbic interaction
+tic
 clear; %clc;
 
 a1 = [1;0;0];  % lattice vectors
@@ -47,14 +48,17 @@ for ii=1:nCharges
         U = U +kB4pieps0_Inv* charge^2/angst* q(ii)*q(jj)/dr;
     end
 end
+toc
 
+tic
 %% Ewald summation
-nReal = 10;
+nReal = 5;
 nImag = 10;
-alpha = 5.6/L; % Ewald parameter
+alpha = 5.6/L*10; % Ewald parameter
 
 USelf    = -kB4pieps0_Inv* charge^2/angst* sum(q.^2)*alpha/sqrt(pi);
 UReal    =  kB4pieps0_Inv* charge^2/angst* realSum(a1,a2,a3,rVec,q,nCharges,nReal,L,alpha);
 UFourier =  kB4pieps0_Inv* charge^2/angst* waveSum(a1,a2,a3,rVec,q,nCharges,nImag,L,alpha);
 
 Utot = UReal + UFourier + USelf;
+toc
