@@ -1,6 +1,7 @@
 % Program to illustrate the use of Ewald summations to calculate total
 % electrostatic energy of a system of charges due to Coloumbic interaction
 clear; %clc;
+tic
 
 angst = 1e-10;
 charge = 0.4238*1.6e-19;
@@ -40,7 +41,7 @@ kB = 1.38e-23;
 kB4pieps0_Inv = 1/(kB*4*pi*eps0);
 
 %% Ewald summation
-% USelf    = -kB4pieps0_Inv* charge^2/angst* sum(q.^2)*alpha/sqrt(pi);
+% USelf    = -kB4pieps0Euler_Inv* charge^2/angst* sum(q.^2)*alpha/sqrt(pi);
 % UIntra   = -kB4pieps0_Inv* charge^2/angst* intraSum(r,q,alpha,M,L);
 % UReal    =  kB4pieps0_Inv* charge^2/angst* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
 % UFourier =  kB4pieps0_Inv* charge^2/angst* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
@@ -67,25 +68,23 @@ kB4pieps0_Inv = 1/(kB*4*pi*eps0);
 % set(gca,'xtick',[], 'ytick',[], 'ztick',[])
 
 %% Test for convergence of real sum
-nList = [0,1,2,4,8];
-len = length(nList);
-alphaList = 5.6/L*(1:3);
-UPlot1 = zeros(length(nList),length(alphaList));
+alphaList = 5.6/L*(1:6);
+
+nList1 = [0,1,2,4,8];
+UPlot1 = zeros(length(nList1),length(alphaList));
 
 for jj=1:length(alphaList)
     alpha= alphaList(jj);
-    parfor ii=1:len
-        nReal = nList(ii);
+    parfor ii=1:length(nList1)
+        nReal = nList1(ii);
         UReal  = kB4pieps0_Inv*charge^2/angst* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
         UPlot1(ii,jj) = UReal;
     end
 end
-
 %%
-close all;
 set(figure(), 'position', [50 50 1000 800]);
 for jj=1:length(alphaList)
-    plot(nList, UPlot1(:,jj), 'o-', 'linewidth', 1.5);
+    plot(nList1, UPlot1(:,jj), 'o-', 'linewidth', 1.5);
     hold on;
 end
 title('Convergence plot for real space sum', 'fontsize', 20);
@@ -93,12 +92,11 @@ xlabel('Number of periodic shells', 'fontsize', 20); ylabel('realSum', 'fontsize
 legn = legend('\xi_1=0.28','\xi_2=0.56','\xi_3=0.84');
 legn.FontSize = 20;
 legn.Location = 'best';
-set(gca,'fontsize',20)
+set(gca,'fontsize',20, 'color', 'w')
 
 %% Test for convergence of Imag sum
-nList2 = 4:2:16;
+nList2 = 10:5:30;
 len = length(nList2);
-alphaList = 5.6/L*(1:3);
 UPlot2 = zeros(length(nList2),length(alphaList));
 
 for jj=1:length(alphaList)
@@ -121,23 +119,25 @@ xlabel('Number of periodic shells', 'fontsize', 20); ylabel('waveSum', 'fontsize
 legn = legend('\xi_1=0.28','\xi_2=0.56','\xi_3=0.84');
 legn.FontSize = 20;
 legn.Location = 'best';
-set(gca,'fontsize',20)
+set(gca,'fontsize',20, 'color', 'w')
 
 %%
-save('ewald_coloumb_data')
-
-%%
-for ii=1:3
-    Uself(ii) = kB4pieps0_Inv* charge^2/angst*sum(q.^2)*alphaList(ii)/sqrt(pi);
-    Utot(ii) = UPlot1(5,ii) + UPlot2(7,ii) - Uself(ii);
+Utot = zeros(length(alphaList),1);
+Uself = zeros(length(alphaList),1);
+for jj=1:length(alphaList)
+    Uself(jj) = kB4pieps0_Inv* charge^2/angst*sum(q.^2)*alphaList(jj)/sqrt(pi);
+    Utot(jj) = UPlot1(5,jj) + UPlot2(5,jj) - Uself(jj);
 end
-% plot(alphaList,Uself, 'linewidth',1.5);
-% ylim([-2e7 -1e7])
 
-
-plot(alphaList,-UPlot1(5,:), alphaList,-UPlot2(7,:), alphaList,Uself, alphaList, -Utot, 'linewidth',2);
+set(figure(), 'position', [50 50 1000 800]);
+plot(alphaList,-UPlot1(5,:), 'o-', alphaList,-UPlot2(5,:),'o-', ...
+    alphaList, Uself,'o-',  alphaList, -Utot, 'o-', 'linewidth',2);
+title('Total energy plot','fontsize',20);
+xlabel('\xi', 'fontsize', 20); ylabel('U', 'fontsize', 20);
 legn = legend('U_{real}','U_{Fourier}','U_{self}', 'U_{tot}');
 legn.FontSize = 20;
 legn.Location = 'best';
-set(gca,'fontsize',20)
-xlabel('\xi', 'fontsize', 20); ylabel('U', 'fontsize', 20);
+set(gca,'fontsize',20, 'color', 'w')
+
+%%
+toc
