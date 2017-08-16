@@ -3,53 +3,53 @@
 clear; %clc;
 tic
 
-%% Data from file
-angst = 1e-10;
-charge = 0.4238*1.6e-19;
-
-fileNum = 2;
-filename = strcat('validationData/spce_sample_config_periodic', num2str(fileNum), '.txt');
-data = readtable(filename);
-data(:,1) = []; % delete serial number
-
-r = transpose(table2array(data(:,1:3)));
-ions = char(table2array(data(:,4)));
-q = zeros(length(ions),1);
-for ii=1:length(ions)
-    if ions(ii)=='O'
-        q(ii) = -2;
-    elseif ions(ii)=='H'
-        q(ii) = 1;
-    end
-end
-
-N = length(ions); % number of charged particles
-M=N/3; % number of molecules
-fHandle = fopen(filename, 'r');
-firstLine = sscanf(fgetl(fHandle), '%f');
-L = firstLine(1);
-fclose(fHandle);
-
-%% Problem setup-- Assign charges & positions, set parameters
-nReal = 0;
-nImag = 5;
-alpha = 5.6/L; % Ewald parameter
-a1 = [1;0;0];  % lattice vectors
-a2 = [0;1;0];
-a3 = [0;0;1];
-eps0 = 8.85e-12;
-kB = 1.38e-23;
-kB4pieps0_Inv = 1/(kB*4*pi*eps0);
-
-%% Ewald summation
-USelf    = -kB4pieps0_Inv* charge^2/angst* sum(q.^2)*alpha/sqrt(pi);
-UIntra   = -kB4pieps0_Inv* charge^2/angst* intraSum(r,q,alpha,M,L);
-UReal    =  kB4pieps0_Inv* charge^2/angst* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
-UFourier =  kB4pieps0_Inv* charge^2/angst* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
-
-Utot = UReal + UFourier + USelf + UIntra;
-
-%% Visualize primary cell
+% %% Data from file
+% angst = 1e-10;
+% charge = 0.4238*1.6e-19;
+% 
+% fileNum = 1;
+% filename = strcat('validationData/spce_sample_config_periodic', num2str(fileNum), '.txt');
+% data = readtable(filename);
+% data(:,1) = []; % delete serial number
+% 
+% r = transpose(table2array(data(:,1:3)));
+% ions = char(table2array(data(:,4)));
+% q = zeros(length(ions),1);
+% for ii=1:length(ions)
+%     if ions(ii)=='O'
+%         q(ii) = -2;
+%     elseif ions(ii)=='H'
+%         q(ii) = 1;
+%     end
+% end
+% 
+% N = length(ions); % number of charged particles
+% M=N/3; % number of molecules
+% fHandle = fopen(filename, 'r');
+% firstLine = sscanf(fgetl(fHandle), '%f');
+% L = firstLine(1);
+% fclose(fHandle);
+% 
+% %% Problem setup-- Assign charges & positions, set parameters
+% nReal = 0;
+% nImag = 5;
+% alpha = 5.6/L; % Ewald parameter
+% a1 = [1;0;0];  % lattice vectors
+% a2 = [0;1;0];
+% a3 = [0;0;1];
+% eps0 = 8.85e-12;
+% kB = 1.38e-23;
+% kB4pieps0_Inv = 1/(kB*4*pi*eps0);
+% 
+% %% Ewald summation
+% USelf    = -kB4pieps0_Inv* charge^2/angst* sum(q.^2)*alpha/sqrt(pi);
+% UIntra   = -kB4pieps0_Inv* charge^2/angst* intraSum(r,q,alpha,M,L);
+% UReal    =  kB4pieps0_Inv* charge^2/angst* realSum(a1,a2,a3,r,q,N,nReal,L,alpha);
+% UFourier =  kB4pieps0_Inv* charge^2/angst* waveSum(a1,a2,a3,r,q,N,nImag,L,alpha);
+% 
+% Utot = UReal + UFourier + USelf + UIntra;
+% 
+% %% Visualize primary cell
 % %-----------------------
 % set(figure(1), 'position', [500 500 1000 1000]);
 % set(gcf,'color','w');
@@ -67,8 +67,8 @@ Utot = UReal + UFourier + USelf + UIntra;
 % grid off;
 % set(gca, 'Box', 'on', 'BoxStyle', 'full');
 % set(gca,'xtick',[], 'ytick',[], 'ztick',[])
-
-
+% 
+% 
 % %%
 % set(figure(), 'position', [0 0 1000 800]);
 % 
@@ -108,10 +108,10 @@ Utot = UReal + UFourier + USelf + UIntra;
 % set(gca,'color', 'w');
 
 
-%% Test for convergence of real sum
+% %% Test for convergence of real sum
 % alphaList = 5.6/L*(1:6);
 % 
-% nList1 = [0,1,2,4,8];
+% nList1 = 0:8;
 % UPlot1 = zeros(length(nList1),length(alphaList));
 % 
 % for jj=1:length(alphaList)
@@ -134,7 +134,7 @@ Utot = UReal + UFourier + USelf + UIntra;
 % legn.FontSize = 20;
 % legn.Location = 'best';
 % set(gca,'fontsize',20, 'color', 'w')
-% 
+
 % %% Test for convergence of Imag sum
 % nList2 = 10:5:30;
 % len = length(nList2);
@@ -180,5 +180,4 @@ Utot = UReal + UFourier + USelf + UIntra;
 % legn.Location = 'best';
 % set(gca,'fontsize',20, 'color', 'w')
 % 
-% %%
 toc

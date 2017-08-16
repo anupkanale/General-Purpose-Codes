@@ -8,18 +8,20 @@ function URealSum = realSum(a1,a2,a3,r,q,N,nReal,L,alpha)
     for kk=1:(2*nReal+1)^3 % sum over periodic boxes
     for jj=1:N
         for ll=jj+1:N
-            rjl = r(:,ll) - r(:,jj) + nVec(:,kk);
-            for index=1:3 % Periodic BC- pulling particles back in box
-                if rjl(index)>rjl(index)+L/2
-                    rjl(index) = rjl(index) - L;
-                elseif rjl(index)<rjl(index)-L/2
-                    rjl(index) = rjl(index) + L;
-                end
-            end
+            dr = r(:,ll) - r(:,jj) + nVec(:,kk);
+%             if nReal==0
+%                 for index=1:3 % Periodic BC- pulling particles back in box
+%                     if dr(index)>L/2
+%                         dr(index) = dr(index) - L;
+%                     elseif dr(index)<-L/2
+%                         dr(index) = dr(index) + L;
+%                     end
+%                 end
+%             end
 
-            dr = norm(rjl);
-            if dr~=0 % && distance<=rCut % Minimum Image convention
-                temp = q(jj)*q(ll)/dr * erfc(dr*alpha);%*heaviside(rCut-dist);
+            drMag = norm(dr);
+            if drMag>1e-10
+                temp = q(jj)*q(ll)/drMag * erfc(drMag*alpha);
                 URealSum = URealSum + temp;
             end
         end
