@@ -123,17 +123,17 @@ for jj=1:length(alphaList)
     end
 end
 %%
-set(figure(), 'position', [50 50 1000 800]);
+set(figure(), 'position', [50 50 1000 800], 'color', 'w');
 for jj=1:length(alphaList)
      plot(nList1, UPlot1(:,jj), 'o-', 'linewidth', 1.5);
      hold on;
 end
-title('Convergence plot for real space sum', 'fontsize', 20);
+% title('Convergence plot for real space sum', 'fontsize', 20);
 xlabel('Number of periodic shells', 'fontsize', 20); ylabel('realSum', 'fontsize', 20);
 % legn = legend('\xi_1=0.28','\xi_2=0.56','\xi_3=0.84');
 % legn.FontSize = 20;
 % legn.Location = 'best';
-set(gca,'fontsize',20, 'color', 'w')
+set(gca,'fontsize',16, 'color', 'w')
 
 %% Test for convergence of Imag sum
 nList2 = 10:5:30;
@@ -150,18 +150,18 @@ for jj=1:length(alphaList)
 end
 
 %%
-set(figure(), 'position', [50 50 1000 800]);
+set(figure(), 'position', [50 50 1000 800], 'color', 'w');
 for jj=1:length(alphaList)
     plot(nList2, UPlot2(:,jj), 'o-', 'linewidth', 1.5);
     hold on;
 end
-title('Convergence plot for k-space sum', 'fontsize', 20);
+% title('Convergence plot for k-space sum', 'fontsize', 20);
 xlabel('Number of periodic shells', 'fontsize', 20); ylabel('waveSum', 'fontsize', 20);
 % legn = legend('\xi_1=0.28','\xi_2=0.56','\xi_3=0.84');
 % legn.FontSize = 20;
 % legn.Location = 'best';
-set(gca,'fontsize',20, 'color', 'w')
- 
+set(gca,'fontsize',16, 'color', 'w')
+
 %%
 Utot = zeros(length(alphaList),1);
 Uself = zeros(length(alphaList),1);
@@ -169,17 +169,19 @@ for jj=1:length(alphaList)
     Uself(jj) = kB4pieps0_Inv* charge^2/angst*sum(q.^2)*alphaList(jj)/sqrt(pi);
     Utot(jj) = UPlot1(5,jj) + UPlot2(5,jj) - Uself(jj);
 end
- 
-set(figure(), 'position', [50 50 1000 800]);
+
+%%
+set(figure(), 'position', [50 50 1000 800], 'color', 'w');
 plot(alphaList,-UPlot1(5,:), 'o-', alphaList,-UPlot2(5,:),'o-', ...
      alphaList, Uself,'o-',  alphaList, -Utot, 'o-', 'linewidth',2);
-title('Total energy plot','fontsize',20);
-xlabel('\xi', 'fontsize', 20); ylabel('U', 'fontsize', 20);
-% legn = legend('U_{real}','U_{Fourier}','U_{self}', 'U_{tot}');
+% title('Total energy plot','fontsize',20);
+xlabel('\xi', 'fontsize', 20); ylabel('Energy', 'fontsize', 20);
+xlim([0.25 1.7])
+legn = legend('U_{real}','U_{Fourier}','U_{self}', 'U_{tot}');
 % legn.FontSize = 20;
-% legn.Location = 'best';
-set(gca,'fontsize',20, 'color', 'w')
-
+legn.Location = 'best';
+set(gca,'fontsize',16, 'color','w')
+%%
 save('dddummy')
 
 toc
