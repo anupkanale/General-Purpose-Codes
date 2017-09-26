@@ -1,10 +1,10 @@
 function uReal = realSum(nStokes,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nReal)
-    uReal = 0;
+    uReal = zeros(3,1);
     pVec = getP(a1,a2,a3,nReal,L);
     
-    for nn=1:(2*nReal+1)^3
-    for ii=1:nStokes
-        dr = rVecM - r_fVec(:,ii) + pVec(nn);
+    for p=1:(2*nReal+1)^3
+    for n=1:nStokes
+        dr = rVecM - r_fVec(:,n) + pVec(p);
         
         for index=1:3 % Periodic BC
             if dr(index)>L(index)/2
@@ -15,10 +15,10 @@ function uReal = realSum(nStokes,rVecM,r_fVec,fVec,xi,L,a1,a2,a3,nReal)
         end
         drMag = norm(dr);
         
-        A = 2*((xi*exp(-xi^2*drMag^2)/(sqrt(pi)*drMag^2) + erfc(xi*drMag)/(2*drMag^3)));
-        A = A* (drMag^2*eye(3) + dr*dr');
+        A = xi*exp(-xi^2*drMag^2)/(sqrt(pi)*drMag^2) + erfc(xi*drMag)/(2*drMag^3);
+        A = 2*A* (drMag^2*eye(3) + dr*dr');
         A = A- 4*xi*exp(-xi^2*drMag^2)/sqrt(pi) * eye(3);
-        uReal = uReal + A * fVec(:,ii);
+        uReal = uReal + A * fVec(:,n);
     end
     end
 end
